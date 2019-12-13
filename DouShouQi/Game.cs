@@ -513,6 +513,7 @@ namespace DouShouQi
         {
             giliran = giliran == 1 ? 2 : 1;
             updateUI();
+            checkWin();
         }
     }
 
