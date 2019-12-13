@@ -1,0 +1,10 @@
+H:\Tugas\Semester 5\AI\Proyek\DouShouQi\bin\Debug\DouShouQi.exe.config
+H:\Tugas\Semester 5\AI\Proyek\DouShouQi\bin\Debug\DouShouQi.exe
+H:\Tugas\Semester 5\AI\Proyek\DouShouQi\bin\Debug\DouShouQi.pdb
+H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.Form1.resources
+H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.Game.resources
+H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.Properties.Resources.resources
+H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.csproj.GenerateResource.Cache
+H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.csproj.CoreCompileInputs.cache
+H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.exe
+H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.pdb
