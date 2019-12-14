@@ -69,6 +69,12 @@ namespace DouShouQi
             // Initialize Papan
             initPapan();
             updateUI();
+
+            if(giliran == 1)
+            {
+                //random move
+            }
+
         }
 
         public void updateUI()
@@ -297,6 +303,13 @@ namespace DouShouQi
                                 changeGiliran();
                             }
                         }
+                        else if(str == 7)
+                        {
+                            if(checkMoveElephant(second_click, around_first_click, coords))
+                            {
+                                changeGiliran();
+                            }
+                        }
                         else
                         {
                             //move biasa (Hewan tanpa special move)
@@ -463,6 +476,20 @@ namespace DouShouQi
             return false;
         }
 
+        public bool checkMoveElephant(SquareNode second, Dictionary<string, SquareNode> around, int[] coordinates)
+        {
+            // check secondclick water?
+            if(!second.isWater)
+            {
+                if (second.animal == null || second.animal.strength != 0)
+                {
+                    moveAnimal(second, coordinates);
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public Dictionary<string, SquareNode> getAround(SquareNode first_click)
         {
             Dictionary<string, SquareNode> around = new Dictionary<string, SquareNode>();
@@ -514,6 +541,877 @@ namespace DouShouQi
             giliran = giliran == 1 ? 2 : 1;
             updateUI();
             checkWin();
+
+            //gilirancomputer
+            if (giliran == 1)
+            {
+                //MessageBox.Show("Giliran Computer");
+                SquareNode[,] clone = getBoardClone(board);
+
+                // init depth
+                int depth = 3;
+
+                List<object> m = MiniMax(clone, depth, 1, new Move(clone), int.MinValue, int.MaxValue);
+                Move t = (Move) m[0];
+                while(t.nextMove.nextMove != null)
+                {
+                    if(t.nextMove != null)
+                    {
+                        t = t.nextMove;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                if(t != null)
+                {
+                    board = t.currentBoard;
+                    changeGiliran();
+                }
+
+            }
+            updateUI();
+        }
+
+        private List<object> MiniMax(SquareNode[,] board, int depth, int giliran_now, Move last_move, int alpha, int beta)
+        {
+            if (depth == 0)
+            {
+                // kalau depth sudah 3 (sudah masuk node depth ke 3 ) Maka Hitung SBE
+                // initial value
+                int value = 0;
+                SquareNode[,] copy = last_move.currentBoard;
+
+                // initialize myPieces and enemyPieces
+                List<Piece> myPieces, enemyPieces;
+                myPieces = new List<Piece>();
+                enemyPieces = new List<Piece>();
+
+                // Ambil myPieces dan enemyPieces
+                for (int y = 0; y < 9; y++)
+                {
+                    for (int x = 0; x < 7; x++)
+                    {
+                        SquareNode currentPiece = copy[x, y];
+                        if (currentPiece.animal != null)
+                        {
+                            if (currentPiece.animal.player == giliran)
+                            {
+                                myPieces.Add(currentPiece.animal);
+                            }
+                            else
+                            {
+                                enemyPieces.Add(currentPiece.animal);
+                            }
+                        }
+                    }
+                }
+
+                value += ((myPieces.Count - enemyPieces.Count) * 100);
+
+                // set jarak
+                int jarakX = int.MinValue, jarakY = int.MinValue;
+                int dx = int.MaxValue, dy = int.MaxValue;
+
+                foreach (Piece item in myPieces)
+                {
+                    jarakX = 3 - item.position[0];
+                    jarakX = Math.Abs(jarakX);
+                    if (giliran == 1)
+                    {
+                        jarakY = Math.Abs(8 - item.position[1]);
+                    }
+                    else
+                    {
+                        jarakY = Math.Abs(0 - item.position[1]);
+                    }
+                    if (jarakY == jarakX && jarakX == 0)
+                    {
+                        value = int.MaxValue;
+                        return new List<object>()
+                        {
+                            last_move,
+                            value
+                        };
+                    }
+                    else
+                    {
+                        if (dx > jarakX) dx = jarakX;
+                        if (dy > jarakY) dy = jarakY;
+                    }
+                }
+                value += (((jarakX + jarakY) / 2) * -1);
+                return new List<object>()
+                {
+                    last_move,
+                    value
+                };
+            }
+            else
+            {
+                // Kalau belum Depth 3 maka lanjut rekur
+                List<Piece> willMove = new List<Piece>();
+                int ctr = 0;
+                
+                // Ambil semua piece yang akan gerak pada turn ini
+                for(int y = 0; y < 9; y++)
+                {
+                    for (int x = 0; x < 7; x++)
+                    {
+                        SquareNode node = board[x, y];
+                        if(node.animal != null)
+                        {
+                            if(node.animal.isAlive && node.animal.player == giliran_now)
+                            {
+                                willMove.Add(node.animal);
+                                ++ctr;
+                            }
+                        }
+                    }
+                }
+
+                // Initialize Boards untuk simpan tree(?) papan. 
+                List<SquareNode[,]> boards = new List<SquareNode[,]>();
+
+                // Loop setiap piece yang akan gerak
+                foreach(Piece myAnimal in willMove)
+                {
+                    //check possible moves (Atas, bawah, kiri, kanan) tidak outof bound
+                    var possibleMoves = findPossibleMoves(myAnimal.position, board);
+                    foreach (var move in possibleMoves)
+                    {
+                        //untuk setiap possible moves copy board lalu coba gerak 
+                        SquareNode[,] temp = getBoardClone(board);
+                        int x = myAnimal.position[0];
+                        int y = myAnimal.position[1];
+
+                        //check if move keynya atas / bawah / kiri / kanan
+                        if(move.Key == "atas")
+                        {
+                            tryMoveUp(boards, myAnimal, temp, x, y);
+                        }
+                        else if(move.Key == "bawah")
+                        {
+                            tryMoveDown(boards, myAnimal, temp, x, y);
+                        }
+                        else if (move.Key == "kiri")
+                        {
+                            tryMoveLeft(boards, myAnimal, temp, x, y);
+                        }
+                        else if (move.Key == "kanan")
+                        {
+                            tryMoveRight(boards, myAnimal, temp, x, y);
+                        }
+                    }
+                }
+
+                // siapkann return
+                List<object> kembalian = new List<object>();
+                foreach (SquareNode[,] item in boards)
+                {
+                    SquareNode[,] clonedBoard = getBoardClone(item);
+                    Move now = new Move(clonedBoard);
+                    now.nextMove = last_move;
+                    List<object> tampung = MiniMax(clonedBoard, depth - 1, giliran_now == 1 ? 2 : 1, now, alpha, beta);
+                    if(kembalian.Count == 0)
+                    {
+                        kembalian = tampung;
+                    }
+
+                    if(giliran_now == giliran)
+                    {
+                        // get Max
+                        if(alpha < (int)tampung[1])
+                        {
+                            // swap
+                            alpha = (int)tampung[1];
+                            kembalian = tampung;
+                        }
+                    }
+                    else
+                    {
+                        // get Min
+                        if(beta > (int)tampung[1])
+                        {
+                            beta = (int)tampung[1];
+                            kembalian = tampung;
+                        }
+                    }
+
+                    // PRUNE
+                    if(alpha >= beta)
+                    {
+                        break;
+                    }
+                }
+                return kembalian;
+            }
+        }
+
+        private void tryMoveUp(List<SquareNode[,]> boards, Piece myAnimal, SquareNode[,] temp_board, int x, int y)
+        {
+            // Ambil Node atas dari myAnimal
+            SquareNode check_node = temp_board[x, y - 1];
+            if(check_node.isDen && check_node.denOwner == myAnimal.player)
+            {
+                // Tidak bisa masuk den sendiri
+            }
+            else
+            {
+                // tidak masuk den, maka check apakah petak yang akan dituju kosong dan bukan water?
+                if(check_node.animal == null && !check_node.isWater)
+                {
+                    //kalau iya langsung tancap gas
+                    check_node.animal = temp_board[x, y].animal;
+                    check_node.animal.position = new int[] { x, y-1 };
+                    temp_board[x, y].animal = null;
+                    boards.Add(temp_board);
+                }
+                else
+                {
+                    //kalau nggak null atau nggak air check dulu str supaya bisa check special move (?)
+                    if (myAnimal.strength == 0)
+                    {
+                        // check special move rat
+                        // check gerak dalam air
+                        if(check_node.isWater &&  temp_board[x,y].isWater)
+                        {
+                            check_node.animal = temp_board[x, y].animal;
+                            check_node.animal.position = new int[] { x, y - 1 };
+                            temp_board[x, y].animal = null;
+                            boards.Add(temp_board);
+                        }
+                        else
+                        {
+                            // gerak masuk air / gerak keluar air / gerak biasa
+                            // check apakah animal pada checknode  null atau tidak, kalau nggak null maka check strength
+                            if(check_node.animal != null)
+                            {
+                                if(check_node.isWater != temp_board[x,y].isWater)
+                                {
+                                    //masuk dalem air / keluar air (KALAU NGGAK NULL GAK BISA MAKAN)
+                                }
+                                else if(check_node.animal.player != myAnimal.player && (check_node.animal.strength == 0 || check_node.animal.strength == 7 || check_node.isTrap))
+                                {
+                                    // kalau musuh merupakan tikus / gajah / atau apapun yang menempati trap, makan
+                                    check_node.animal = temp_board[x, y].animal;
+                                    check_node.animal.position = new int[] { x, y - 1 };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                            }
+                            else
+                            {
+                                // is null gaskan
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x, y - 1 };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                        }
+                    }
+                    else if (myAnimal.strength == 5 || myAnimal.strength == 6)
+                    {
+                        // check special move jump (Lion and Tiger)
+                        // check depannya air?
+                        if(check_node.isWater)
+                        {
+                            // check lompat, cek depannya null dan kotak ke2 dan kotak 3 null
+                            if(check_node.animal == null && temp_board[x, y-2].animal == null && temp_board[x,y-3].animal == null)
+                            {
+                                // bisa lompat tapi check tujuan lompat apabila ada animal diseberang?
+                                if (temp_board[x, y - 4].animal == null)
+                                {
+                                    // tidak ada animal maka lansung tancap gas
+                                    temp_board[x, y - 4].animal = temp_board[x, y].animal;
+                                    temp_board[x, y - 4].animal.position = new int[] { x, y - 4 };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                                else if(temp_board[x, y - 4].animal.player != myAnimal.player)
+                                {
+                                    // ada animal maka check str
+                                    if(myAnimal.strength >= temp_board[x,y-4].animal.strength)
+                                    {
+                                        temp_board[x, y - 4].animal = temp_board[x, y].animal;
+                                        temp_board[x, y - 4].animal.position = new int[] { x, y - 4 };
+                                        temp_board[x, y].animal = null;
+                                        boards.Add(temp_board);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // bukan air then check depannya null gak, kalau null langsung tapi kalau nggak brarti check str
+                            if(check_node.animal == null)
+                            {
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x, y - 1 };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                            else
+                            {
+                                if (myAnimal.strength >= check_node.animal.strength && myAnimal.player != check_node.animal.player)
+                                {
+                                    // kalau str dan tidak allies gaskan
+                                    check_node.animal = temp_board[x, y].animal;
+                                    check_node.animal.position = new int[] { x, y - 1 };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                            }
+                        }
+                    }
+                    else if (myAnimal.strength == 7)
+                    {
+                        //check gajah tidak bisa makan tikus
+                        if(!check_node.isWater)
+                        {
+                            if(check_node.animal != null)
+                            {
+                                //check apakah itu tikus dan bukan punyaku?
+                                if (check_node.animal.strength != 0 && check_node.animal.player != myAnimal.player)
+                                {
+                                    check_node.animal = temp_board[x, y].animal;
+                                    check_node.animal.position = new int[] { x, y - 1 };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                            }
+                            else
+                            {
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x, y - 1 };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // check gerak biasa
+                        if(!check_node.isWater)
+                        {
+                            // kalau bukan water
+                            if( check_node.animal.player != myAnimal.player && myAnimal.strength >= check_node.animal.strength)
+                            {
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x, y - 1 };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void tryMoveDown(List<SquareNode[,]> boards, Piece myAnimal, SquareNode[,] temp_board, int x, int y)
+        {
+            // Ambil Node atas dari myAnimal
+            SquareNode check_node = temp_board[x, y + 1];
+            if (check_node.isDen && check_node.denOwner == myAnimal.player)
+            {
+                // Tidak bisa masuk den sendiri
+            }
+            else
+            {
+                // tidak masuk den, maka check apakah petak yang akan dituju kosong dan bukan water?
+                if (check_node.animal == null && !check_node.isWater)
+                {
+                    //kalau iya langsung tancap gas
+                    check_node.animal = temp_board[x, y].animal;
+                    check_node.animal.position = new int[] { x, y + 1 };
+                    temp_board[x, y].animal = null;
+                    boards.Add(temp_board);
+                }
+                else
+                {
+                    //kalau nggak null atau nggak air check dulu str supaya bisa check special move (?)
+                    if (myAnimal.strength == 0)
+                    {
+                        // check special move rat
+                        // check gerak dalam air
+                        if (check_node.isWater && temp_board[x, y].isWater)
+                        {
+                            check_node.animal = temp_board[x, y].animal;
+                            check_node.animal.position = new int[] { x, y + 1 };
+                            temp_board[x, y].animal = null;
+                            boards.Add(temp_board);
+                        }
+                        else
+                        {
+                            // gerak masuk air / gerak keluar air / gerak biasa
+                            // check apakah animal pada checknode  null atau tidak, kalau nggak null maka check strength
+                            if (check_node.animal != null)
+                            {
+                                if (check_node.isWater != temp_board[x, y].isWater)
+                                {
+                                    //masuk dalem air / keluar air (KALAU NGGAK NULL GAK BISA MAKAN)
+                                }
+                                else if (check_node.animal.player != myAnimal.player && (check_node.animal.strength == 0 || check_node.animal.strength == 7 || check_node.isTrap))
+                                {
+                                    // kalau musuh merupakan tikus / gajah / atau apapun yang menempati trap, makan
+                                    check_node.animal = temp_board[x, y].animal;
+                                    check_node.animal.position = new int[] { x, y + 1 };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                            }
+                            else
+                            {
+                                // is null gaskan
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x, y + 1 };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                        }
+                    }
+                    else if (myAnimal.strength == 5 || myAnimal.strength == 6)
+                    {
+                        // check special move jump (Lion and Tiger)
+                        // check depannya air?
+                        if (check_node.isWater)
+                        {
+                            // check lompat, cek depannya null dan kotak ke2 dan kotak 3 null
+                            if (check_node.animal == null && temp_board[x, y + 2].animal == null && temp_board[x, y + 3].animal == null)
+                            {
+                                // bisa lompat tapi check tujuan lompat apabila ada animal diseberang?
+                                if (temp_board[x, y + 4].animal == null)
+                                {
+                                    // tidak ada animal maka lansung tancap gas
+                                    temp_board[x, y + 4].animal = temp_board[x, y].animal;
+                                    temp_board[x, y + 4].animal.position = new int[] { x, y + 4 };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                                else if (temp_board[x, y + 4].animal.player != myAnimal.player)
+                                {
+                                    // ada animal maka check str
+                                    if (myAnimal.strength >= temp_board[x, y + 4].animal.strength)
+                                    {
+                                        temp_board[x, y + 4].animal = temp_board[x, y].animal;
+                                        temp_board[x, y + 4].animal.position = new int[] { x, y + 4 };
+                                        temp_board[x, y].animal = null;
+                                        boards.Add(temp_board);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // bukan air then check depannya null gak, kalau null langsung tapi kalau nggak brarti check str
+                            if (check_node.animal == null)
+                            {
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x, y + 1 };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                            else
+                            {
+                                if (myAnimal.strength >= check_node.animal.strength && myAnimal.player != check_node.animal.player)
+                                {
+                                    // kalau str dan tidak allies gaskan
+                                    check_node.animal = temp_board[x, y].animal;
+                                    check_node.animal.position = new int[] { x, y + 1 };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                            }
+                        }
+                    }
+                    else if (myAnimal.strength == 7)
+                    {
+                        //check gajah tidak bisa makan tikus
+                        if (!check_node.isWater)
+                        {
+                            if (check_node.animal != null)
+                            {
+                                //check apakah itu tikus dan bukan punyaku?
+                                if (check_node.animal.strength != 0 && check_node.animal.player != myAnimal.player)
+                                {
+                                    check_node.animal = temp_board[x, y].animal;
+                                    check_node.animal.position = new int[] { x, y + 1 };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                            }
+                            else
+                            {
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x, y + 1 };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // check gerak biasa
+                        if (!check_node.isWater)
+                        {
+                            // kalau bukan water
+                            if (check_node.animal.player != myAnimal.player && myAnimal.strength >= check_node.animal.strength)
+                            {
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x, y + 1 };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void tryMoveLeft(List<SquareNode[,]> boards, Piece myAnimal, SquareNode[,] temp_board, int x, int y)
+        {
+            // Ambil Node kiri dari MyAnimal
+            SquareNode check_node = temp_board[x - 1, y];
+            if (check_node.isDen && check_node.denOwner == myAnimal.player)
+            {
+                // Tidak bisa masuk den sendiri
+            }
+            else
+            {
+                // tidak masuk den, maka check apakah petak yang akan dituju kosong dan bukan water?
+                if (check_node.animal == null && !check_node.isWater)
+                {
+                    //kalau iya langsung tancap gas
+                    check_node.animal = temp_board[x, y].animal;
+                    check_node.animal.position = new int[] { x - 1, y };
+                    temp_board[x, y].animal = null;
+                    boards.Add(temp_board);
+                }
+                else
+                {
+                    //kalau nggak null atau nggak air check dulu str supaya bisa check special move (?)
+                    if (myAnimal.strength == 0)
+                    {
+                        // check special move rat
+                        // check gerak dalam air
+                        if (check_node.isWater && temp_board[x, y].isWater)
+                        {
+                            check_node.animal = temp_board[x, y].animal;
+                            check_node.animal.position = new int[] { x - 1, y };
+                            temp_board[x, y].animal = null;
+                            boards.Add(temp_board);
+                        }
+                        else
+                        {
+                            // gerak masuk air / gerak keluar air / gerak biasa
+                            // check apakah animal pada checknode  null atau tidak, kalau nggak null maka check strength
+                            if (check_node.animal != null)
+                            {
+                                if (check_node.isWater != temp_board[x, y].isWater)
+                                {
+                                    //masuk dalem air / keluar air (KALAU NGGAK NULL GAK BISA MAKAN)
+                                }
+                                else if (check_node.animal.player != myAnimal.player && (check_node.animal.strength == 0 || check_node.animal.strength == 7 || check_node.isTrap))
+                                {
+                                    // kalau musuh merupakan tikus / gajah / atau apapun yang menempati trap, makan
+                                    check_node.animal = temp_board[x, y].animal;
+                                    check_node.animal.position = new int[] { x - 1, y };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                            }
+                            else
+                            {
+                                // is null gaskan
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x - 1, y };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                        }
+                    }
+                    else if (myAnimal.strength == 5 || myAnimal.strength == 6)
+                    {
+                        // check special move jump (Lion and Tiger)
+                        // check kirinya air?
+                        if (check_node.isWater)
+                        {
+                            // check lompat, cek kirinya null dan kotak ke2
+                            if (check_node.animal == null && temp_board[x - 2, y].animal == null)
+                            {
+                                // bisa lompat tapi check tujuan lompat apabila ada animal diseberang?
+                                if (temp_board[x - 3, y ].animal == null)
+                                {
+                                    // tidak ada animal maka lansung tancap gas
+                                    temp_board[x - 3, y ].animal = temp_board[x, y].animal;
+                                    temp_board[x - 3, y].animal.position = new int[] { x - 3, y };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                                else if (temp_board[x - 3, y].animal.player != myAnimal.player)
+                                {
+                                    // ada animal maka check str
+                                    if (myAnimal.strength >= temp_board[x - 3, y].animal.strength)
+                                    {
+                                        // tidak ada animal maka lansung tancap gas
+                                        temp_board[x - 3, y].animal = temp_board[x, y].animal;
+                                        temp_board[x - 3, y].animal.position = new int[] { x - 3, y };
+                                        temp_board[x, y].animal = null;
+                                        boards.Add(temp_board);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // bukan air then check depannya null gak, kalau null langsung tapi kalau nggak brarti check str
+                            if (check_node.animal == null)
+                            {
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x - 1, y };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                            else
+                            {
+                                if (myAnimal.strength >= check_node.animal.strength && myAnimal.player != check_node.animal.player)
+                                {
+                                    // kalau str dan tidak allies gaskan
+                                    check_node.animal = temp_board[x, y].animal;
+                                    check_node.animal.position = new int[] { x - 1, y };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                            }
+                        }
+                    }
+                    else if (myAnimal.strength == 7)
+                    {
+                        //check gajah tidak bisa makan tikus
+                        if (!check_node.isWater)
+                        {
+                            if (check_node.animal != null)
+                            {
+                                //check apakah itu tikus dan bukan punyaku?
+                                if (check_node.animal.strength != 0 && check_node.animal.player != myAnimal.player)
+                                {
+                                    check_node.animal = temp_board[x, y].animal;
+                                    check_node.animal.position = new int[] { x - 1, y };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                            }
+                            else
+                            {
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x - 1, y };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // check gerak biasa
+                        if (!check_node.isWater)
+                        {
+                            // kalau bukan water
+                            if (check_node.animal.player != myAnimal.player && myAnimal.strength >= check_node.animal.strength)
+                            {
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x - 1, y };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void tryMoveRight(List<SquareNode[,]> boards, Piece myAnimal, SquareNode[,] temp_board, int x, int y)
+        {
+            // Ambil Node kiri dari MyAnimal
+            SquareNode check_node = temp_board[x + 1, y];
+            if (check_node.isDen && check_node.denOwner == myAnimal.player)
+            {
+                // Tidak bisa masuk den sendiri
+            }
+            else
+            {
+                // tidak masuk den, maka check apakah petak yang akan dituju kosong dan bukan water?
+                if (check_node.animal == null && !check_node.isWater)
+                {
+                    //kalau iya langsung tancap gas
+                    check_node.animal = temp_board[x, y].animal;
+                    check_node.animal.position = new int[] { x + 1, y };
+                    temp_board[x, y].animal = null;
+                    boards.Add(temp_board);
+                }
+                else
+                {
+                    //kalau nggak null atau nggak air check dulu str supaya bisa check special move (?)
+                    if (myAnimal.strength == 0)
+                    {
+                        // check special move rat
+                        // check gerak dalam air
+                        if (check_node.isWater && temp_board[x, y].isWater)
+                        {
+                            check_node.animal = temp_board[x, y].animal;
+                            check_node.animal.position = new int[] { x + 1, y };
+                            temp_board[x, y].animal = null;
+                            boards.Add(temp_board);
+                        }
+                        else
+                        {
+                            // gerak masuk air / gerak keluar air / gerak biasa
+                            // check apakah animal pada checknode  null atau tidak, kalau nggak null maka check strength
+                            if (check_node.animal != null)
+                            {
+                                if (check_node.isWater != temp_board[x, y].isWater)
+                                {
+                                    //masuk dalem air / keluar air (KALAU NGGAK NULL GAK BISA MAKAN)
+                                }
+                                else if (check_node.animal.player != myAnimal.player && (check_node.animal.strength == 0 || check_node.animal.strength == 7 || check_node.isTrap))
+                                {
+                                    // kalau musuh merupakan tikus / gajah / atau apapun yang menempati trap, makan
+                                    check_node.animal = temp_board[x, y].animal;
+                                    check_node.animal.position = new int[] { x + 1, y };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                            }
+                            else
+                            {
+                                // is null gaskan
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x + 1, y };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                        }
+                    }
+                    else if (myAnimal.strength == 5 || myAnimal.strength == 6)
+                    {
+                        // check special move jump (Lion and Tiger)
+                        // check kirinya air?
+                        if (check_node.isWater)
+                        {
+                            // check lompat, cek kirinya null dan kotak ke2
+                            if (check_node.animal == null && temp_board[x + 2, y].animal == null)
+                            {
+                                // bisa lompat tapi check tujuan lompat apabila ada animal diseberang?
+                                if (temp_board[x + 3, y].animal == null)
+                                {
+                                    // tidak ada animal maka lansung tancap gas
+                                    temp_board[x + 3, y].animal = temp_board[x, y].animal;
+                                    temp_board[x + 3, y].animal.position = new int[] { x + 3, y };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                                else if (temp_board[x + 3, y].animal.player != myAnimal.player)
+                                {
+                                    // ada animal maka check str
+                                    if (myAnimal.strength >= temp_board[x + 3, y].animal.strength)
+                                    {
+                                        // tidak ada animal maka lansung tancap gas
+                                        temp_board[x + 3, y].animal = temp_board[x, y].animal;
+                                        temp_board[x + 3, y].animal.position = new int[] { x + 3, y };
+                                        temp_board[x, y].animal = null;
+                                        boards.Add(temp_board);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // bukan air then check depannya null gak, kalau null langsung tapi kalau nggak brarti check str
+                            if (check_node.animal == null)
+                            {
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x + 1, y };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                            else
+                            {
+                                if (myAnimal.strength >= check_node.animal.strength && myAnimal.player != check_node.animal.player)
+                                {
+                                    // kalau str dan tidak allies gaskan
+                                    check_node.animal = temp_board[x, y].animal;
+                                    check_node.animal.position = new int[] { x + 1, y };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                            }
+                        }
+                    }
+                    else if (myAnimal.strength == 7)
+                    {
+                        //check gajah tidak bisa makan tikus
+                        if (!check_node.isWater)
+                        {
+                            if (check_node.animal != null)
+                            {
+                                //check apakah itu tikus dan bukan punyaku?
+                                if (check_node.animal.strength != 0 && check_node.animal.player != myAnimal.player)
+                                {
+                                    check_node.animal = temp_board[x, y].animal;
+                                    check_node.animal.position = new int[] { x + 1, y };
+                                    temp_board[x, y].animal = null;
+                                    boards.Add(temp_board);
+                                }
+                            }
+                            else
+                            {
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x + 1, y };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // check gerak biasa
+                        if (!check_node.isWater)
+                        {
+                            // kalau bukan water
+                            if (check_node.animal.player != myAnimal.player && myAnimal.strength >= check_node.animal.strength)
+                            {
+                                check_node.animal = temp_board[x, y].animal;
+                                check_node.animal.position = new int[] { x + 1, y };
+                                temp_board[x, y].animal = null;
+                                boards.Add(temp_board);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private Dictionary<string, int[]> findPossibleMoves(int[] coordinates, SquareNode[,] board)
+        {
+            Dictionary<string, int[]> around = new Dictionary<string, int[]>();
+            if (coordinates[1] - 1 >= 0)
+            {
+                around.Add("atas", new int[] { coordinates[0], coordinates[1] - 1 });
+            }
+            if (coordinates[1] + 1 < 9)
+            {
+                around.Add("bawah", new int[] { coordinates[0], coordinates[1] + 1 });
+            }
+            if (coordinates[0] - 1 >= 0)
+            {
+                around.Add("kiri", new int[] { coordinates[0] - 1, coordinates[1] });
+            }
+            if (coordinates[0] + 1 < 7)
+            {
+                around.Add("kanan", new int[] { coordinates[0] + 1, coordinates[1] });
+            }
+            return around;
         }
     }
 
@@ -528,5 +1426,16 @@ namespace DouShouQi
             this.giliran = giliran;
         }
     }
+
+    class Move
+    {
+        public SquareNode[,] currentBoard;
+        public Move nextMove;
+        public Move(SquareNode[,] board)
+        {
+            this.currentBoard = board;
+        }
+    }
+
 }
 

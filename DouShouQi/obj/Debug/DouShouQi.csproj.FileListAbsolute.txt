@@ -8,3 +8,4 @@ H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.csproj.GenerateResou
 H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.csproj.CoreCompileInputs.cache
 H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.exe
 H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.pdb
+H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.csprojResolveAssemblyReference.cache
