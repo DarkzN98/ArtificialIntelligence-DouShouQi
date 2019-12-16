@@ -9,3 +9,13 @@ H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.csproj.CoreCompileIn
 H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.exe
 H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.pdb
 H:\Tugas\Semester 5\AI\Proyek\DouShouQi\obj\Debug\DouShouQi.csprojResolveAssemblyReference.cache
+D:\Kuliah\Semester 5\AI\Proyek V2\DouShouQi\DouShouQi\DouShouQi\bin\Debug\DouShouQi.exe.config
+D:\Kuliah\Semester 5\AI\Proyek V2\DouShouQi\DouShouQi\DouShouQi\bin\Debug\DouShouQi.exe
+D:\Kuliah\Semester 5\AI\Proyek V2\DouShouQi\DouShouQi\DouShouQi\bin\Debug\DouShouQi.pdb
+D:\Kuliah\Semester 5\AI\Proyek V2\DouShouQi\DouShouQi\DouShouQi\obj\Debug\DouShouQi.csprojAssemblyReference.cache
+D:\Kuliah\Semester 5\AI\Proyek V2\DouShouQi\DouShouQi\DouShouQi\obj\Debug\DouShouQi.Form1.resources
+D:\Kuliah\Semester 5\AI\Proyek V2\DouShouQi\DouShouQi\DouShouQi\obj\Debug\DouShouQi.Game.resources
+D:\Kuliah\Semester 5\AI\Proyek V2\DouShouQi\DouShouQi\DouShouQi\obj\Debug\DouShouQi.Properties.Resources.resources
+D:\Kuliah\Semester 5\AI\Proyek V2\DouShouQi\DouShouQi\DouShouQi\obj\Debug\DouShouQi.csproj.GenerateResource.cache
+D:\Kuliah\Semester 5\AI\Proyek V2\DouShouQi\DouShouQi\DouShouQi\obj\Debug\DouShouQi.exe
+D:\Kuliah\Semester 5\AI\Proyek V2\DouShouQi\DouShouQi\DouShouQi\obj\Debug\DouShouQi.pdb

@@ -575,6 +575,136 @@ namespace DouShouQi
             updateUI();
         }
 
+        private int getShaktiValue(int str, int[] coords)
+        {
+            int[,] mouse_magic_number = new int[,]
+            {
+                { 8, 8, 8, 0, 8, 8, 8 },
+                { 8, 8, 8, 9, 9, 9, 9 },
+                { 8, 8, 8, 9, 10, 10, 10 },
+                { 8, 9, 9, 10, 12, 12, 11},
+                { 8, 9, 9, 11, 12, 12, 12 },
+                { 8, 9, 9, 11, 12, 12, 13 },
+                { 10, 11, 11, 13, 13, 13, 13 },
+                { 11, 12, 13, 50, 13, 13, 13 },
+                { 11, 13, 50, int.MaxValue, 50,13,13 }
+            };
+
+            int[,] cat_magic_number = new int[,]
+            {
+                { 8, 8, 8, 0, 8, 8, 8 },
+                { 13, 10, 8, 8, 8, 8, 8 },
+                { 10, 10, 10, 8, 8, 8, 8 },
+                { 10, 0, 0, 8, 0, 0, 8 },
+                { 10, 0, 0, 8, 0, 0, 8 },
+                { 10, 0, 0, 10, 0, 0, 8 },
+                { 10, 11, 11, 15, 11, 11, 10 },
+                { 11, 11, 15, 50, 15, 11, 11 },
+                { 11, 15, 50, int.MaxValue, 50, 15, 11}
+            };
+
+            int[,] wolf_magic_number = new int[,]
+            {
+                {8, 12, 12, 0, 8, 8, 8},
+                {8, 12, 13, 8, 8, 8, 8},
+                {8, 8, 10, 8, 8, 8, 8},
+                {8, 0, 0, 8, 0, 0, 8},
+                {8, 0, 0, 8, 0, 0, 8},
+                {9, 0, 0, 10, 0, 0, 9},
+                {9, 10, 11, 15, 11, 10, 9},
+                {10, 11, 15, 50, 15, 11, 10},
+                {11, 15, 50, int.MaxValue, 50, 15, 11}
+            };
+
+            int[,] dog_magic_number = new int[,]
+            {
+                {8, 8, 8, 0, 12, 12, 8},
+                {8, 8, 8, 8, 13, 10, 8},
+                {8, 8, 8, 8, 8, 8, 8},
+                {8, 0, 0, 8, 0, 0, 8},
+                {8, 0, 0, 8, 0, 0, 8},
+                {9, 0, 0, 10, 0, 0, 9},
+                {9, 10, 11, 15, 11, 10, 9},
+                {10, 11, 15, 50, 15, 11, 10},
+                {11, 15, 50, int.MaxValue, 50, 15, 11}
+            };
+
+            int[,] leopard_magic_number = new int[,]
+            {
+                {9, 9, 9, 0, 9, 9, 9},
+                {9, 9, 9, 9, 9, 9, 9},
+                {9, 9, 9, 10, 10, 9, 9},
+                {10, 0, 0, 13, 0, 0, 10},
+                {11, 0, 0, 14, 0, 0, 11},
+                {12, 0, 0, 15, 0, 0, 12},
+                {13, 13, 14, 15, 14, 13, 13},
+                {13, 14, 15, 50, 15, 14, 13},
+                {14, 15, 50, int.MaxValue, 50, 15, 14}
+            };
+
+            int[,] tiger_magic_number = new int[,]
+            {
+                {10, 12, 12, 0, 12, 12, 10},
+                {12, 14, 12, 12, 12, 12, 12},
+                {14, 16, 16, 14, 16, 16, 14},
+                {15, 0, 0, 15, 0, 0, 15},
+                {15, 0, 0, 15, 0, 0, 15},
+                {15, 0, 0, 15, 0, 0, 15},
+                {18, 20, 20, 30, 20, 20, 18},
+                {25, 25, 30, 50, 30, 25, 25},
+                {25, 30, 50, int.MaxValue, 50, 30, 25}
+            };
+
+            int[,] lion_magic_number = new int[,]
+            {
+                {10, 12, 12, 0, 12, 12, 10},
+                {12, 12, 12, 12, 12, 14, 12},
+                {14, 16, 16, 14, 16, 16, 14},
+                {15, 0, 0, 15, 0, 0, 15},
+                {15, 0, 0, 15, 0, 0, 15},
+                {15, 0, 0, 15, 0, 0, 15},
+                {18, 20, 20, 30, 20, 20, 18},
+                {25, 25, 30, 50, 30, 25, 25},
+                {25, 30, 50, int.MaxValue, 50, 30, 25}
+
+            };
+
+            int[,] elephant_magic_number = new int[,]
+            {
+                {11, 11, 11, 0, 11, 11, 11},
+                {11, 11, 11, 11, 11, 11, 11},
+                {10, 15, 14, 14, 14, 14, 12},
+                {12, 0, 0, 12, 0, 0, 12},
+                {14, 0, 0, 14, 0, 0, 14},
+                {16, 0, 0, 16, 0, 0, 16},
+                {18, 20, 20, 30, 20, 20, 18},
+                {25, 25, 30, 50, 30, 25, 25},
+                {25, 30, 50, int.MaxValue, 50, 30, 25}
+            };
+
+            List<int[,]> magic_numbers = new List<int[,]>()
+            {
+                mouse_magic_number,
+                cat_magic_number,
+                wolf_magic_number,
+                dog_magic_number,
+                leopard_magic_number,
+                tiger_magic_number,
+                lion_magic_number,
+                elephant_magic_number
+            };
+
+            try
+            {
+                return magic_numbers[str][coords[0], coords[1]];
+            }
+            catch
+            {
+                return 0;
+            }
+            
+        }
+
         private List<object> MiniMax(SquareNode[,] board, int depth, int giliran_now, Move last_move, int alpha, int beta)
         {
             if (depth == 0)
@@ -619,6 +749,7 @@ namespace DouShouQi
                 {
                     jarakX = 3 - item.position[0];
                     jarakX = Math.Abs(jarakX);
+                    value += getShaktiValue(item.strength, item.position);
                     if (giliran == 1)
                     {
                         jarakY = Math.Abs(8 - item.position[1]);
@@ -757,6 +888,14 @@ namespace DouShouQi
             if(check_node.isDen && check_node.denOwner == myAnimal.player)
             {
                 // Tidak bisa masuk den sendiri
+            }
+            else if(check_node.isDen && check_node.denOwner != myAnimal.player)
+            {
+                // masuk o den e musuh
+                check_node.animal = temp_board[x, y].animal;
+                check_node.animal.position = new int[] { x, y - 1 };
+                temp_board[x, y].animal = null;
+                boards.Add(temp_board);
             }
             else
             {
@@ -918,6 +1057,14 @@ namespace DouShouQi
             {
                 // Tidak bisa masuk den sendiri
             }
+            else if (check_node.isDen && check_node.denOwner != myAnimal.player)
+            {
+                // masuk o den e musuh
+                check_node.animal = temp_board[x, y].animal;
+                check_node.animal.position = new int[] { x, y + 1 };
+                temp_board[x, y].animal = null;
+                boards.Add(temp_board);
+            }
             else
             {
                 // tidak masuk den, maka check apakah petak yang akan dituju kosong dan bukan water?
@@ -1077,6 +1224,14 @@ namespace DouShouQi
             if (check_node.isDen && check_node.denOwner == myAnimal.player)
             {
                 // Tidak bisa masuk den sendiri
+            }
+            else if (check_node.isDen && check_node.denOwner != myAnimal.player)
+            {
+                // masuk o den e musuh
+                check_node.animal = temp_board[x, y].animal;
+                check_node.animal.position = new int[] { x - 1, y };
+                temp_board[x, y].animal = null;
+                boards.Add(temp_board);
             }
             else
             {
@@ -1238,6 +1393,14 @@ namespace DouShouQi
             if (check_node.isDen && check_node.denOwner == myAnimal.player)
             {
                 // Tidak bisa masuk den sendiri
+            }
+            else if (check_node.isDen && check_node.denOwner != myAnimal.player)
+            {
+                // masuk o den e musuh
+                check_node.animal = temp_board[x, y].animal;
+                check_node.animal.position = new int[] { x + 1, y };
+                temp_board[x, y].animal = null;
+                boards.Add(temp_board);
             }
             else
             {
