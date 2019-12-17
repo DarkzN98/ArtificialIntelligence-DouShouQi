@@ -42,8 +42,7 @@
             this.selectedNullToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(8, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(663, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(497, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -51,25 +50,25 @@
             // 
             this.giliranToolStripMenuItem.Enabled = false;
             this.giliranToolStripMenuItem.Name = "giliranToolStripMenuItem";
-            this.giliranToolStripMenuItem.Size = new System.Drawing.Size(81, 24);
+            this.giliranToolStripMenuItem.Size = new System.Drawing.Size(65, 20);
             this.giliranToolStripMenuItem.Text = "Giliran: 0";
             // 
             // selectedNullToolStripMenuItem
             // 
             this.selectedNullToolStripMenuItem.Name = "selectedNullToolStripMenuItem";
-            this.selectedNullToolStripMenuItem.Size = new System.Drawing.Size(111, 24);
+            this.selectedNullToolStripMenuItem.Size = new System.Drawing.Size(89, 20);
             this.selectedNullToolStripMenuItem.Text = "Selected: null";
             // 
             // Game
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(663, 612);
+            this.ClientSize = new System.Drawing.Size(497, 497);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "Game";
             this.Text = "Game";
+            this.Load += new System.EventHandler(this.Game_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);

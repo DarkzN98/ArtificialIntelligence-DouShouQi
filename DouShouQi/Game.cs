@@ -940,7 +940,14 @@ namespace DouShouQi
                 else
                 {
                     //kalau nggak null atau nggak air check dulu str supaya bisa check special move (?)
-                    if (myAnimal.strength == 0)
+                    if (check_node.animal != null && check_node.isTrap)
+                    {
+                        check_node.animal = temp_board[x, y].animal;
+                        check_node.animal.position = new int[] { x - 1, y };
+                        temp_board[x, y].animal = null;
+                        boards.Add(temp_board);
+                    }
+                    else if (myAnimal.strength == 0)
                     {
                         // check special move rat
                         // check gerak dalam air
@@ -1108,7 +1115,14 @@ namespace DouShouQi
                 else
                 {
                     //kalau nggak null atau nggak air check dulu str supaya bisa check special move (?)
-                    if (myAnimal.strength == 0)
+                    if (check_node.animal != null && check_node.isTrap)
+                    {
+                        check_node.animal = temp_board[x, y].animal;
+                        check_node.animal.position = new int[] { x - 1, y };
+                        temp_board[x, y].animal = null;
+                        boards.Add(temp_board);
+                    }
+                    else if (myAnimal.strength == 0)
                     {
                         // check special move rat
                         // check gerak dalam air
@@ -1276,7 +1290,14 @@ namespace DouShouQi
                 else
                 {
                     //kalau nggak null atau nggak air check dulu str supaya bisa check special move (?)
-                    if (myAnimal.strength == 0)
+                    if(check_node.animal != null && check_node.isTrap)
+                    {
+                        check_node.animal = temp_board[x, y].animal;
+                        check_node.animal.position = new int[] { x - 1, y };
+                        temp_board[x, y].animal = null;
+                        boards.Add(temp_board);
+                    }
+                    else if (myAnimal.strength == 0)
                     {
                         // check special move rat
                         // check gerak dalam air
@@ -1445,7 +1466,14 @@ namespace DouShouQi
                 else
                 {
                     //kalau nggak null atau nggak air check dulu str supaya bisa check special move (?)
-                    if (myAnimal.strength == 0)
+                    if (check_node.animal != null && check_node.isTrap)
+                    {
+                        check_node.animal = temp_board[x, y].animal;
+                        check_node.animal.position = new int[] { x - 1, y };
+                        temp_board[x, y].animal = null;
+                        boards.Add(temp_board);
+                    }
+                    else if (myAnimal.strength == 0)
                     {
                         // check special move rat
                         // check gerak dalam air
@@ -1604,6 +1632,11 @@ namespace DouShouQi
                 around.Add("kanan", new int[] { coordinates[0] + 1, coordinates[1] });
             }
             return around;
+        }
+
+        private void Game_Load(object sender, EventArgs e)
+        {
+
         }
     }
 
