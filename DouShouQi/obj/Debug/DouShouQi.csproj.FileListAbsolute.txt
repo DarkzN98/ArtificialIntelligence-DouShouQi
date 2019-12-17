@@ -19,3 +19,14 @@ D:\Kuliah\Semester 5\AI\Proyek V2\DouShouQi\DouShouQi\DouShouQi\obj\Debug\DouSho
 D:\Kuliah\Semester 5\AI\Proyek V2\DouShouQi\DouShouQi\DouShouQi\obj\Debug\DouShouQi.csproj.GenerateResource.cache
 D:\Kuliah\Semester 5\AI\Proyek V2\DouShouQi\DouShouQi\DouShouQi\obj\Debug\DouShouQi.exe
 D:\Kuliah\Semester 5\AI\Proyek V2\DouShouQi\DouShouQi\DouShouQi\obj\Debug\DouShouQi.pdb
+C:\Users\adria\Documents\Proyek AI\DouShouQi\bin\Debug\DouShouQi.exe.config
+C:\Users\adria\Documents\Proyek AI\DouShouQi\bin\Debug\DouShouQi.exe
+C:\Users\adria\Documents\Proyek AI\DouShouQi\bin\Debug\DouShouQi.pdb
+C:\Users\adria\Documents\Proyek AI\DouShouQi\obj\Debug\DouShouQi.csprojAssemblyReference.cache
+C:\Users\adria\Documents\Proyek AI\DouShouQi\obj\Debug\DouShouQi.Form1.resources
+C:\Users\adria\Documents\Proyek AI\DouShouQi\obj\Debug\DouShouQi.Game.resources
+C:\Users\adria\Documents\Proyek AI\DouShouQi\obj\Debug\DouShouQi.Properties.Resources.resources
+C:\Users\adria\Documents\Proyek AI\DouShouQi\obj\Debug\DouShouQi.csproj.GenerateResource.cache
+C:\Users\adria\Documents\Proyek AI\DouShouQi\obj\Debug\DouShouQi.csproj.CoreCompileInputs.cache
+C:\Users\adria\Documents\Proyek AI\DouShouQi\obj\Debug\DouShouQi.exe
+C:\Users\adria\Documents\Proyek AI\DouShouQi\obj\Debug\DouShouQi.pdb

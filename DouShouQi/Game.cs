@@ -933,7 +933,7 @@ namespace DouShouQi
                 {
                     //kalau iya langsung tancap gas
                     check_node.animal = temp_board[x, y].animal;
-                    check_node.animal.position = new int[] { x, y-1 };
+                    check_node.animal.position = new int[] { x, y - 1 };
                     temp_board[x, y].animal = null;
                     boards.Add(temp_board);
                 }
@@ -943,7 +943,7 @@ namespace DouShouQi
                     if (check_node.animal != null && check_node.isTrap)
                     {
                         check_node.animal = temp_board[x, y].animal;
-                        check_node.animal.position = new int[] { x - 1, y };
+                        check_node.animal.position = new int[] { x, y - 1 }; // Koncoku bangsat trymoveup x di minus satu
                         temp_board[x, y].animal = null;
                         boards.Add(temp_board);
                     }
@@ -1118,7 +1118,7 @@ namespace DouShouQi
                     if (check_node.animal != null && check_node.isTrap)
                     {
                         check_node.animal = temp_board[x, y].animal;
-                        check_node.animal.position = new int[] { x - 1, y };
+                        check_node.animal.position = new int[] { x, y + 1 };
                         temp_board[x, y].animal = null;
                         boards.Add(temp_board);
                     }
@@ -1469,7 +1469,7 @@ namespace DouShouQi
                     if (check_node.animal != null && check_node.isTrap)
                     {
                         check_node.animal = temp_board[x, y].animal;
-                        check_node.animal.position = new int[] { x - 1, y };
+                        check_node.animal.position = new int[] { x + 1, y };
                         temp_board[x, y].animal = null;
                         boards.Add(temp_board);
                     }
