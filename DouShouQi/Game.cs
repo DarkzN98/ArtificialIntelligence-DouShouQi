@@ -15,6 +15,9 @@ namespace DouShouQi
         // int giliran. apabila 1 maka player duluan, apabila 2 maka Ai duluan
         int giliran = 1;
 
+        // AI DEPTH SETTINGS
+        const int DEPTH_SETTING = 3;
+
         // Object Player
         Player player = new Player("player", 2);
         Player computer = new Player("computer", 1);
@@ -70,9 +73,34 @@ namespace DouShouQi
             initPapan();
             updateUI();
 
-            if(giliran == 1)
+            //gilirancomputer
+            if (giliran == 1)
             {
-                //random move
+                //MessageBox.Show("Giliran Computer");
+                SquareNode[,] clone = getBoardClone(board);
+
+                // init depth
+                int depth = DEPTH_SETTING;
+
+                List<object> m = MiniMax(clone, depth, 1, new Move(clone), int.MinValue, int.MaxValue);
+                Move t = (Move)m[0];
+                while (t.nextMove.nextMove != null)
+                {
+                    if (t.nextMove != null)
+                    {
+                        t = t.nextMove;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                if (t != null)
+                {
+                    board = t.currentBoard;
+                    changeGiliran();
+                }
             }
 
         }
@@ -549,7 +577,7 @@ namespace DouShouQi
                 SquareNode[,] clone = getBoardClone(board);
 
                 // init depth
-                int depth = 3;
+                int depth = DEPTH_SETTING;
 
                 List<object> m = MiniMax(clone, depth, 1, new Move(clone), int.MinValue, int.MaxValue);
                 Move t = (Move) m[0];
@@ -569,6 +597,7 @@ namespace DouShouQi
                 {
                     board = t.currentBoard;
                     changeGiliran();
+                    checkWin();
                 }
 
             }
