@@ -57,7 +57,7 @@ namespace DouShouQi
         };
 
         Random rand = new Random();
-        int first_move = 0;
+        bool AI_first_move = true;
 
         int[,] mouse_magic_number = new int[,]
             {
@@ -649,12 +649,12 @@ namespace DouShouQi
             if(den1.animal != null)
             {
                 MessageBox.Show("Player Menang");
-                Close();
+                this.Close();
             }
             else if(den2.animal != null)
             {
                 MessageBox.Show("Computer Menang");
-                Close();
+                this.Close();
             }
         }
 
@@ -675,6 +675,7 @@ namespace DouShouQi
 
                 List<object> m = MiniMax(clone, depth, 1, new Move(clone), int.MinValue, int.MaxValue);
                 Move t = (Move) m[0];
+                
                 while(t.nextMove.nextMove != null)
                 {
                     if(t.nextMove != null)
@@ -690,9 +691,17 @@ namespace DouShouQi
                 if(t != null)
                 {
                     board = t.currentBoard;
+                    if (t.currentBoard[3, 0].animal != null)
+                    {
+                        den1.animal = t.currentBoard[3, 0].animal;
+                    }
+                    else if (t.currentBoard[3, 8].animal != null)
+                    {
+                        den2.animal = t.currentBoard[3, 8].animal;
+                    }
                     changeGiliran();
                 }
-
+                AI_first_move = false;
             }
             updateUI();
         }
@@ -701,7 +710,11 @@ namespace DouShouQi
         {
             try
             {
-                return magic_numbers[rand.Next(7)][coords[1], coords[0]];
+                if(AI_first_move == true)
+                {
+                    return magic_numbers[rand.Next(7)][coords[1], coords[0]];
+                }
+                return magic_numbers[str][coords[1], coords[0]];
             }
             catch
             {
